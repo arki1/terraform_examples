@@ -3,6 +3,62 @@ provider "google" {
   region  = var.region
 }
 
+# VM Template with Built-in Container Support
+resource "google_compute_instance_template" "vm_template" {
+  name_prefix  = "vm-template-"
+  machine_type = "e2-medium"
+
+  # Container-Optimized OS (cos-stable)
+  disk {
+    auto_delete  = true
+    boot         = true
+    source_image = "projects/cos-cloud/global/images/family/cos-stable"
+  }
+
+  metadata = {
+    google-logging-enabled     = "true"
+    "gce-container-declaration" = <<-EOT
+      spec:
+        containers:
+        - name: cloudrun-hello
+          image: gcr.io/${var.project_id}/container-hello
+          env:
+          - name: GOOGLE_CLOUD_REGION
+            value: ${var.region}
+          ports:
+          - containerPort: 8080
+        restartPolicy: Always
+    EOT
+  }
+
+  network_interface {
+    network = "default"
+  }
+
+  tags = ["container-vm"]
+
+  scheduling {
+    preemptible       = false
+    automatic_restart = true
+  }
+
+  # Container deployment within the VM (No startup script needed)
+  confidential_instance_config {
+    enable_confidential_compute = false
+  }
+
+  shielded_instance_config {
+    enable_secure_boot          = false
+    enable_vtpm                 = true
+    enable_integrity_monitoring = true
+  }
+
+  service_account {
+    email  = "default"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+}
+
 # VM Template with Container-Optimized OS
 resource "google_compute_instance_template" "vm_template" {
   name_prefix  = "vm-template-"
@@ -35,13 +91,13 @@ resource "google_compute_instance_template" "vm_template" {
     #!/bin/bash
     echo 'Starting container...'
     /usr/bin/docker-credential-gcr configure-docker
-    docker run -d -p 80:8080 --name my-container -e GOOGLE_CLOUD_REGION=${var.region} gcr.io/${var.project_id}/cloudrun-hello
+    docker run -d -p 80:8080 --name my-container -e GOOGLE_CLOUD_REGION=${var.region} gcr.io/${var.project_id}/container-hello
   EOT
 }
 
 # Regional Managed Instance Group with Region in Name
 resource "google_compute_region_instance_group_manager" "mig" {
-  name               = "my-regional-mig-${var.region}"
+  name               = "mig-${var.region}"
   base_instance_name = "container-vm"
   region             = var.region
 
