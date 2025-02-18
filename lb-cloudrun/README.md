@@ -19,8 +19,11 @@ gcloud config set project YOUR_PROJECT_ID
 Clone the repository by using this:
 
 ```sh
-git clone git@github.com:arki1/terraform_examples.git
+git clone https://github.com/arki1/terraform_examples.git
+```
 
+Go to this example folder by running:
+```sh
 cd terraform_examples/lb-cloudrun
 ```
 
@@ -38,6 +41,7 @@ gcloud builds submit --tag gcr.io/$DEVSHELL_PROJECT_ID/cloudrun-hello
 If your Terraform files are stored in Cloud Shell, simply:
 
 ```sh
+cd ..
 cd terraform/
 terraform init
 terraform apply -var="project_id=$DEVSHELL_PROJECT_ID"
