@@ -67,6 +67,22 @@ terraform apply -var="project_id=$DEVSHELL_PROJECT_ID" -var="subdomain=$YOUR_PRE
 
 And you're good to go! 🚀
 
+## Testing
+
+You can test it directly in the browser using the subdomain endpoint. (Note the output values in the end of the terraform execution).
+
+Or you can just run a curl:
+
+```sh
+curl https://$YOUR_PREFIX.arki1.cloud
+```
+
+So calling this URL from your local browser would show you one region, can calling it from Cloud Shell may already show you a DIFFERENT region, as cloud shell usually runs in US.
+
+Note that the colors change BASED on the region in which the service is deployed.
+
+As the Load Balancers are still not properly defined, when the region fails, please make SEVERAL attempts to make it switch to a different region. Remember, every minute, one of the regions will fail.
+
 
 ## Delays in SSL Certificate Provisioning and DNS propagation
 
