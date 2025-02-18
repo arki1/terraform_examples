@@ -1,11 +1,4 @@
-# Create a Network Endpoint Group (NEG) that points to the Managed Instance Group
-resource "google_compute_region_network_endpoint_group" "neg" {
-  name                  = "neg-${var.region}"
-  network_endpoint_type = "SERVERLESS"
-  region                = var.region
-}
-
-# Backend Service using the NEG
+# Backend Service using the MIG (No need for NEG)
 resource "google_compute_backend_service" "backend" {
   name                  = "backend-service"
   protocol              = "HTTP"
