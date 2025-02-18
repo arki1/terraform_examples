@@ -1,12 +1,20 @@
-# Load Balancer and Cloud Run
+# Global Load Balancer and Cloud Run
 
-In this example, a sample application that shows each region it is deployed into is deployed in multiple cloud run services and attached to a Global Load Balancer. A backend is created pointing to multiple NEGs, each representing a Cloud Run Service in a region.
+This example demonstrates how to deploy a **sample application** across multiple **Cloud Run services**, attach them to a **Global Load Balancer**, and manage failover using **Network Endpoint Groups (NEGs)**.
 
-The application is deployed in 6 different regions and - on purpose - fails in one of these regions for a whole minute.
+## **Overview**
+- The application is deployed in **six different regions**.
+- A **single backend** is created, pointing to **multiple NEGs** (each representing a Cloud Run service in a different region).
+- The **Load Balancer routes traffic to the nearest region** for the caller.
+- **Failure Handling:** Each region is intentionally configured to fail for **one minute** to test failover behavior.
 
-The nearest region to the load balancer caller should be chosen, but when it fails the load balancer should transfer traffic to the other regions.
+## **Expected Behavior**
+1. **Traffic is routed to the nearest healthy region.**
+2. If the **Cloud Run service fails**, the **Load Balancer should automatically shift traffic** to another healthy region.
 
-NOTE: There are still improvements to be made in the `outlier_detection` attribute, to improve detection and recovering. Currently, it kinda works, but it's not perfect.
+## **Improvements & Future Work**
+- The **`outlier_detection` attribute** could be fine-tuned to enhance failure detection and recovery.
+- Currently, the failover **partially works but is not perfect**.
 
 ## Cloning this repository into your Cloud Shell
 
