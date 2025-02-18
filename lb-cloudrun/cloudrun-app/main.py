@@ -1,8 +1,19 @@
-from flask import Flask
+from flask import Flask, request
 import datetime
 import os
 
 app = Flask(__name__)
+
+# ANSI color codes
+COLOR_CODES = {
+    "red": "\033[31m",
+    "pink": "\033[35m",
+    "green": "\033[32m",
+    "blue": "\033[34m",
+    "orange": "\033[33m",
+    "gray": "\033[90m",
+    "reset": "\033[0m"
+}
 
 @app.route("/")
 def hello():
@@ -30,17 +41,20 @@ def hello():
         background_color = "gray"
         region_number = 6
 
-    # every minute, one of the regions will be unavailable
-
-    # calculate the number of minutes since the beginning of the day
+    # Determine if a region should be unavailable
     minutes_since_midnight = (datetime.datetime.utcnow() - datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds() // 60
-
-    # and find the division remainder of 6
     result = minutes_since_midnight % 6
 
-    # if region equals result, returns a 503 error
     if region_number == result:
         return "503 Service Unavailable", 503
+
+    # Detect if the request is coming from curl
+    user_agent = request.headers.get("User-Agent", "").lower()
+    is_curl = "curl" in user_agent
+
+    if is_curl:
+        color_code = COLOR_CODES.get(background_color, COLOR_CODES["reset"])
+        return f"{color_code}Hello World! {current_time} {current_region}{COLOR_CODES['reset']}\n"
 
     return f"<html><head><title>{current_region}</title></head><body style='background-color: {background_color}'>Hello World! {current_time} {current_region}</body></html>"
 
