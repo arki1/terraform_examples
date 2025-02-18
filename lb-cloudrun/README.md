@@ -69,7 +69,7 @@ And you're good to go! 🚀
 
 ## Testing
 
-You can test it directly in the browser using the subdomain endpoint. (Note the output values in the end of the terraform execution).
+You can test it directly in the browser using the subdomain endpoint. (Note the output values in the end of the terraform execution). Note the [delays in SSL Certificate Provisioning and DNS propagation](#delays-in-ssl-certificate-provisioning-and-dns-propagation).
 
 Or you can just run a curl:
 
