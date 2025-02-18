@@ -30,18 +30,18 @@ resource "google_compute_instance_template" "vm_template" {
     automatic_restart = true
   }
 
-  # Defining the container
+  # Run the container properly and expose port 80
   metadata_startup_script = <<-EOT
     #!/bin/bash
     echo 'Starting container...'
     /usr/bin/docker-credential-gcr configure-docker
-    docker run -d --name my-container -e GOOGLE_CLOUD_REGION=${var.region} gcr.io/${var.project_id}/container-hello
+    docker run -d -p 80:8080 --name my-container -e GOOGLE_CLOUD_REGION=${var.region} gcr.io/${var.project_id}/cloudrun-hello
   EOT
 }
 
-# Regional Managed Instance Group
+# Regional Managed Instance Group with Region in Name
 resource "google_compute_region_instance_group_manager" "mig" {
-  name               = "my-regional-mig"
+  name               = "my-regional-mig-${var.region}"
   base_instance_name = "container-vm"
   region             = var.region
 
@@ -67,9 +67,9 @@ resource "google_compute_region_instance_group_manager" "mig" {
   ]
 }
 
-# Health Check for MIG
+# Health Check (Updated for Port 80)
 resource "google_compute_health_check" "default" {
-  name                = "default-health-check"
+  name                = "health-check-${var.region}"
   check_interval_sec  = 30
   timeout_sec         = 5
   healthy_threshold   = 2
