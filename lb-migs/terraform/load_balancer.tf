@@ -24,7 +24,7 @@ resource "google_compute_target_https_proxy" "https_proxy" {
 }
 
 resource "google_compute_global_forwarding_rule" "https_forwarding_rule" {
-  name                  = "https_forwarding_rule"
+  name                  = "https-forwarding-rule"
   target                = google_compute_target_https_proxy.https_proxy.id
   port_range            = "443"
   load_balancing_scheme = "EXTERNAL"
