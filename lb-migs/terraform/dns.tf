@@ -10,6 +10,6 @@ resource "google_dns_record_set" "subdomain" {
   ttl          = 300
   managed_zone = "arki1-cloud" # Change this to your existing Cloud DNS zone
 
-  rrdatas = [google_compute_global_address.lb_ip.address]
+  rrdatas = [google_compute_global_forwarding_rule.https_forwarding_rule.ip_address]
 }
 
