@@ -17,19 +17,28 @@ resource "google_compute_url_map" "url_map" {
 }
 
 # HTTP Proxy
-resource "google_compute_target_http_proxy" "http_proxy" {
+resource "google_compute_target_https_proxy" "http_proxy" {
   name    = "http-proxy"
   url_map = google_compute_url_map.url_map.id
+  ssl_certificates = [google_compute_managed_ssl_certificate.ssl_cert.id]
 }
 
-# Global Forwarding Rule (Public IP Address)
-resource "google_compute_global_forwarding_rule" "http_forwarding_rule" {
-  name       = "http-forwarding-rule"
-  target     = google_compute_target_http_proxy.http_proxy.id
-  port_range = "80"
+resource "google_compute_global_forwarding_rule" "https_forwarding_rule" {
+  name                  = "https_forwarding_rule"
+  target                = google_compute_target_https_proxy.https_proxy.id
+  port_range            = "443"
+  load_balancing_scheme = "EXTERNAL"
 }
 
-# Reserve Static IP for Load Balancer
-resource "google_compute_global_address" "lb_ip" {
-  name = "lb-ip"
+# Create SSL Certificate
+resource "google_compute_managed_ssl_certificate" "ssl_cert" {
+  name = "cloudrun-ssl-cert-${var.subdomain}"
+
+  managed {
+    domains = ["${var.subdomain}.${var.parent_domain}"]
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
