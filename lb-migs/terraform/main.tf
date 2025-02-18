@@ -3,6 +3,36 @@ provider "google" {
   region  = var.region
 }
 
+module "gce-container" {
+  source = "terraform-google-modules/container-vm/google"
+  version = "~> 3.2"
+
+  container = {
+    image="gcr.io/${var.project_id}/container-hello:latest"
+    securityContext = {
+      privileged : true
+    }
+    tty : true
+    env = [
+      {
+        name = "GOOGLE_CLOUD_REGION"
+        value = var.region
+      }
+    ],
+
+    volumeMounts = []
+  }
+
+  volumes = []
+
+  restart_policy = "Always"
+}
+
+data "google_compute_image" "gce_container_vm_image" {
+  family  = "cos-stable"
+  project = "cos-cloud"
+}
+
 # VM Template with Built-in Container Support
 resource "google_compute_instance_template" "vm_template" {
   name_prefix  = "vm-template-"
@@ -10,25 +40,19 @@ resource "google_compute_instance_template" "vm_template" {
 
   # Container-Optimized OS (cos-stable)
   disk {
-    auto_delete  = true
-    boot         = true
-    source_image = "projects/cos-cloud/global/images/family/cos-stable"
+    source_image      = data.google_compute_image.gce_container_vm_image.self_link
+    auto_delete       = true
+    boot              = true
+    disk_type         = "pd-balanced"
+    disk_size_gb      = 10
   }
 
   metadata = {
-    google-logging-enabled     = "true"
-    "gce-container-declaration" = <<-EOT
-      spec:
-        containers:
-        - name: cloudrun-hello
-          image: gcr.io/${var.project_id}/container-hello
-          env:
-          - name: GOOGLE_CLOUD_REGION
-            value: ${var.region}
-          ports:
-          - containerPort: 8080
-        restartPolicy: Always
-    EOT
+    "gce-container-declaration" = module.gce-container.metadata_value
+  }
+
+  labels = {
+    "container-vm" = module.gce-container.vm_container_label
   }
 
   network_interface {
