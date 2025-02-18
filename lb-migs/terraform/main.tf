@@ -59,42 +59,6 @@ resource "google_compute_instance_template" "vm_template" {
   }
 }
 
-# VM Template with Container-Optimized OS
-resource "google_compute_instance_template" "vm_template" {
-  name_prefix  = "vm-template-"
-  machine_type = "e2-medium"
-
-  # Container-Optimized OS
-  disk {
-    auto_delete  = true
-    boot         = true
-    source_image = "projects/cos-cloud/global/images/family/cos-stable"
-  }
-
-  network_interface {
-    network = "default"
-  }
-
-  metadata = {
-    google-logging-enabled = "true"
-  }
-
-  tags = ["container-vm"]
-
-  scheduling {
-    preemptible       = false
-    automatic_restart = true
-  }
-
-  # Run the container properly and expose port 80
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    echo 'Starting container...'
-    /usr/bin/docker-credential-gcr configure-docker
-    docker run -d -p 80:8080 --name my-container -e GOOGLE_CLOUD_REGION=${var.region} gcr.io/${var.project_id}/container-hello
-  EOT
-}
-
 # Regional Managed Instance Group with Region in Name
 resource "google_compute_region_instance_group_manager" "mig" {
   name               = "mig-${var.region}"
