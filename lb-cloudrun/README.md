@@ -52,16 +52,18 @@ If your Terraform files are stored in Cloud Shell, simply:
 cd ..
 cd terraform/
 terraform init
-terraform apply -var="project_id=$DEVSHELL_PROJECT_ID"
 ```
 
-You can either supply another field in the apply command specifying your desired subdomain, or you can just enter it manually when terraform asks for it.
+Define a prefix in which the endpoing will use for the subdomain. `https://YOUR_PREFIX.arki1.cloud`
+We recommend using your or any unique nickname to avoid colision with other instructors.
 
 ```sh
-terraform apply -var="project_id=$DEVSHELL_PROJECT_ID" -var="subdomain=YOUR_PREFIX"
+YOUR_PREFIX=feu
 ```
 
-If you supply `feu`, the endpoint will be `https://feu.arki1.cloud`. We recommend using your or any unique nickname to avoid colision with other instructors.
+```sh
+terraform apply -var="project_id=$DEVSHELL_PROJECT_ID" -var="subdomain=$YOUR_PREFIX"
+```
 
 And you're good to go! 🚀
 
@@ -94,7 +96,7 @@ Doing the way it's described below, you won't be destroying the SSL certificate,
 cd terraform/
 terraform destroy \
   -var="project_id=$DEVSHELL_PROJECT_ID" \
-  -var="subdomain=YOUR_PREFIX" \
+  -var="subdomain=$YOUR_PREFIX" \
   -target="google_cloud_run_service.cloudrun_service" \
   -target="google_compute_backend_service.backend" \
   -target="google_compute_global_forwarding_rule.https_forwarding_rule" \
@@ -102,4 +104,18 @@ terraform destroy \
   -target="google_compute_url_map.url_map" \
   -target="google_compute_region_network_endpoint_group.serverless_neg" \
   -target="google_dns_record_set.subdomain"
+```
+
+## FAQ - Errors
+
+### Error SSL Certificate already exists
+
+> Error: Error creating ManagedSslCertificate: googleapi: Error 409: The resource 'projects/YOUR_PROJECT/global/sslCertificates/cloudrun-ssl-cert-YOUR_PREFIX' already exists
+
+In this case, you already have a certificate and terraform is trying to create it. To fix it, you must import it to terraform state.
+```sh
+terraform import \
+  -var="project_id=$DEVSHELL_PROJECT_ID" \
+  -var="subdomain=$YOUR_PREFIX" \
+  google_compute_managed_ssl_certificate.ssl_cert projects/$DEVSHELL_PROJECT_ID/global/sslCertificates/cloudrun-ssl-cert-$YOUR_PREFIX
 ```
