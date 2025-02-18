@@ -82,7 +82,7 @@ Doing the way it's described below, you won't be destroying the SSL certificate,
 cd terraform/
 terraform destroy \
   -var="project_id=$DEVSHELL_PROJECT_ID" \
-  -var="subdomain=feu" \
+  -var="subdomain=YOUR_PREFIX" \
   -target="google_cloud_run_service.cloudrun_service" \
   -target="google_compute_backend_service.backend" \
   -target="google_compute_global_forwarding_rule.https_forwarding_rule" \
