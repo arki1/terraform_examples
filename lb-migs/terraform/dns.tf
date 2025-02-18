@@ -1,15 +1,15 @@
-# DNS Zone
-resource "google_dns_managed_zone" "dns_zone" {
-  name     = "my-dns-zone"
-  dns_name = "${var.domain_name}."
+provider "google" {
+  alias   = "dns"
+  project = "arki1-cloud" # Project where the DNS is hosted
 }
 
-# Create an A record for the Load Balancer
-resource "google_dns_record_set" "lb_dns" {
-  name         = "${var.subdomain}.${var.domain_name}."
+resource "google_dns_record_set" "subdomain" {
+  provider     = google.dns
+  name         = "${var.subdomain}.${var.parent_domain}."
   type         = "A"
   ttl          = 300
-  managed_zone = google_dns_managed_zone.dns_zone.name
+  managed_zone = "arki1-cloud" # Change this to your existing Cloud DNS zone
 
   rrdatas = [google_compute_global_address.lb_ip.address]
 }
+
