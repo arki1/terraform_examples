@@ -96,7 +96,7 @@ resource "google_compute_region_instance_group_manager" "mig" {
   target_size = 2  # Number of instances in the group
 
   auto_healing_policies {
-    health_check      = google_compute_health_check.default.id
+    health_check      = google_compute_health_check.default[each.value].id
     initial_delay_sec = 300
   }
 
