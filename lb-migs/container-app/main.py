@@ -25,7 +25,7 @@ def hello():
     if current_region == "us-central1":
         background_color = "red"
         region_number = 1
-    elif current_region == "us-east1":
+    elif current_region == "us-east4":
         background_color = "pink"
         region_number = 2
     elif current_region == "southamerica-east1":
@@ -34,7 +34,7 @@ def hello():
     elif current_region == "southamerica-west1":
         background_color = "blue"
         region_number = 4
-    elif current_region == "europe-west1":
+    elif current_region == "europe-west2":
         background_color = "orange"
         region_number = 5
     elif current_region == "northamerica-northeast1":
