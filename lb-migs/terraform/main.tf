@@ -32,19 +32,7 @@ module "gce-container" {
     }
     tty : true
 
-    # ports = [
-    #   {
-    #     containerPort = 8080
-    #     protocol = "TCP"
-    #     hostPort = 80
-    #   }
-    # ]
-
-    args = [
-      "-p",
-      "80:8080"
-    ]
-
+    # container has automatic access to host ports
     env = [
       {
         name = "GOOGLE_CLOUD_REGION"
