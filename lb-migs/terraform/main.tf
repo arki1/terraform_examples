@@ -1,6 +1,5 @@
 provider "google" {
   project = var.project_id
-  region  = var.region
 }
 
 resource "google_service_account" "vm_service_account" {
@@ -22,8 +21,10 @@ resource "google_project_iam_member" "storage_access" {
 }
 
 # VM Template with Built-in Container Support
-resource "google_compute_instance_template" "vm_template" {
-  name_prefix  = "vm-template-"
+
+resource "google_compute_instance_template" "instance_template" {
+  for_each    = toset(var.regions)
+  name_prefix = "instance-template-${each.value}-"
   machine_type = "e2-medium"
 
   # Container-Optimized OS (cos-stable)
@@ -45,7 +46,7 @@ resource "google_compute_instance_template" "vm_template" {
           image: gcr.io/${var.project_id}/container-hello
           env:
           - name: GOOGLE_CLOUD_REGION
-            value: ${var.region}
+            value: ${each.value}
           ports:
           - containerPort: 80
         restartPolicy: Always
@@ -83,12 +84,13 @@ resource "google_compute_instance_template" "vm_template" {
 
 # Regional Managed Instance Group with Region in Name
 resource "google_compute_region_instance_group_manager" "mig" {
-  name               = "mig-${var.region}"
-  base_instance_name = "container-vm"
-  region             = var.region
+  for_each           = toset(var.regions)
+  name               = "mig-${each.value}"
+  base_instance_name = "vm-${each.value}"
+  region             = each.value
 
   version {
-    instance_template = google_compute_instance_template.vm_template.id
+    instance_template = google_compute_instance_template.instance_template[each.value].self_link
   }
 
   target_size = 2  # Number of instances in the group
@@ -104,15 +106,16 @@ resource "google_compute_region_instance_group_manager" "mig" {
   }
 
   distribution_policy_zones = [
-    "${var.region}-a",
-    "${var.region}-b",
+    "${each.value}-a",
+    "${each.value}-b",
   ]
 }
 
 # Health Check (Updated for Port 80)
 resource "google_compute_health_check" "default" {
-  name                = "health-check-${var.region}"
-  check_interval_sec  = 30
+  for_each       = toset(var.regions)
+  name                = "health-check-${each.value}"
+  check_interval_sec  = 10
   timeout_sec         = 5
   healthy_threshold   = 2
   unhealthy_threshold = 2

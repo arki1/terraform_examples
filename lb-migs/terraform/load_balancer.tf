@@ -5,8 +5,11 @@ resource "google_compute_backend_service" "backend" {
   load_balancing_scheme = "EXTERNAL"
   health_checks         = [google_compute_health_check.default.id]
 
-  backend {
-    group = google_compute_region_instance_group_manager.mig.instance_group
+  dynamic "backend" {
+    for_each = google_compute_region_instance_group_manager.mig.instance_group
+    content {
+      group = backend.value.instance_group
+    }
   }
 }
 
