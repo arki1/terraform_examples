@@ -55,10 +55,6 @@ resource "google_compute_instance_template" "vm_template" {
     EOT
   }
 
-  labels = {
-    "container-vm" = module.gce-container.vm_container_label
-  }
-
   network_interface {
     network    = "default" # Use your existing VPC name
     subnetwork = "default" # Or the actual subnet where your VMs run
