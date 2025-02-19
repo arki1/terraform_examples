@@ -58,7 +58,7 @@ Define a prefix in which the endpoing will use for the subdomain. `https://YOUR_
 We recommend using your or any unique nickname to avoid colision with other instructors.
 
 ```sh
-YOUR_PREFIX=feu
+YOUR_PREFIX=<your_name_or_nickname>
 ```
 
 ```sh
