@@ -1,3 +1,5 @@
+# Without a CLOUD NAT or GOOGLE PRIVATE ACCESS, the instances cannot pull the container images
+
 # Cloud Router (Required for Cloud NAT)
 resource "google_compute_router" "nat_router" {
   name    = "nat-router"
