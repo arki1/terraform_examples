@@ -54,6 +54,8 @@ cd terraform/
 terraform init
 ```
 
+## Define a subdomain prefix
+
 Define a prefix in which the endpoing will use for the subdomain. `https://YOUR_PREFIX.arki1.cloud`
 We recommend using your or any unique nickname to avoid colision with other instructors.
 
