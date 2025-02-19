@@ -6,7 +6,8 @@ resource "google_compute_backend_service" "backend" {
   health_checks         = [google_compute_health_check.default.id]
 
   dynamic "backend" {
-    for_each = google_compute_region_instance_group_manager.mig.instance_group
+    for_each = google_compute_region_instance_group_manager.mig
+    
     content {
       group = backend.value.instance_group
     }
