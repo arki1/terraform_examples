@@ -74,7 +74,11 @@ resource "google_compute_instance_template" "vm_template" {
   }
 
   network_interface {
-    network = "default"
+    network    = "default" # Use your existing VPC name
+    subnetwork = "default" # Or the actual subnet where your VMs run
+    access_config {
+      nat_ip = google_compute_router_nat.cloud_nat.nat_ip
+    }
   }
 
   tags = ["container-vm"]
