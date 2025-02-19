@@ -92,7 +92,7 @@ resource "google_compute_region_instance_group_manager" "mig" {
     instance_template = google_compute_instance_template.instance_template[each.value].self_link
   }
 
-  target_size = 2  # Number of instances in the group
+  target_size = 1  # Number of instances in the group
 
   auto_healing_policies {
     health_check      = google_compute_health_check.default.id
