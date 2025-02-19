@@ -3,6 +3,24 @@ provider "google" {
   region  = var.region
 }
 
+resource "google_service_account" "vm_service_account" {
+  account_id   = "vm-container-access"
+  display_name = "VM Container Access Service Account"
+}
+
+# Grant required roles to the service account
+resource "google_project_iam_member" "artifact_registry_access" {
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+}
+
+resource "google_project_iam_member" "storage_access" {
+  project = var.project_id
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+}
+
 module "gce-container" {
   source = "terraform-google-modules/container-vm/google"
   version = "~> 3.2"
@@ -78,7 +96,7 @@ resource "google_compute_instance_template" "vm_template" {
   }
 
   service_account {
-    email  = "default"
+    email  = google_service_account.vm_service_account.email
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
