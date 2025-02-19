@@ -28,10 +28,7 @@ resource "google_compute_instance_template" "vm_template" {
 
   # Container-Optimized OS (cos-stable)
   disk {
-    source_image      = {
-      family  = "cos-stable"
-      project = "cos-cloud"
-    }
+    source_image      = "projects/cos-cloud/global/images/family/cos-stable"
     auto_delete       = true
     boot              = true
     disk_type         = "pd-balanced"
