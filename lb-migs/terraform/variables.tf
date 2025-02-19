@@ -21,5 +21,4 @@ variable "parent_domain" {
 variable "subdomain" {
   description = "The subdomain for the Load Balancer (e.g., 'app')"
   type        = string
-  default     = "feu"
 }
