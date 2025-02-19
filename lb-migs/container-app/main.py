@@ -59,4 +59,4 @@ def hello():
     return f"<html><head><title>{current_region}</title></head><body style='background-color: {background_color}'>Hello World! {current_time} {current_region}</body></html>"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=80)
