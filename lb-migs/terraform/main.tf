@@ -92,7 +92,7 @@ resource "google_compute_instance_template" "vm_template" {
     subnetwork = "default" # Or the actual subnet where your VMs run
   }
 
-  tags = ["container-vm"]
+  tags = ["container-vm", "web"]
 
   scheduling {
     preemptible       = false
