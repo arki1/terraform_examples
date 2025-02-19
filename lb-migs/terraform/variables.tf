@@ -10,7 +10,7 @@ variable "regions" {
   type        = list(string)
   default     = [
     "us-central1",
-    "us-east1",
+    "us-east4",
     "southamerica-east1",
     "southamerica-west1",
     "europe-west2",
