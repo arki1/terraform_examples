@@ -106,7 +106,9 @@ resource "google_compute_region_instance_group_manager" "mig" {
 
   distribution_policy_zones = [
     "${each.value}-a",
-    "${each.value}-b",
+    
+    # for target_size > 1, uncomment the line below
+    # "${each.value}-b",
   ]
 }
 
