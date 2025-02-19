@@ -54,8 +54,7 @@ resource "google_compute_instance_template" "instance_template" {
   }
 
   network_interface {
-    network    = "default" # Use your existing VPC name
-    subnetwork = "default" # Or the actual subnet where your VMs run
+    network    = "default" 
   }
 
   tags = ["container-vm", "web"]
