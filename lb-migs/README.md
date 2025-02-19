@@ -1,20 +1,4 @@
-# Global Load Balancer and Cloud Run
-
-This example demonstrates how to deploy a **sample application** across multiple **Cloud Run services**, attach them to a **Global Load Balancer**, and manage failover using **Network Endpoint Groups (NEGs)**.
-
-## **Overview**
-- The application is deployed in **six different regions**.
-- A **single backend** is created, pointing to **multiple NEGs** (each representing a Cloud Run service in a different region).
-- The **Load Balancer routes traffic to the nearest region** for the caller.
-- **Failure Handling:** Each region is intentionally configured to fail for **one minute** to test failover behavior.
-
-## **Expected Behavior**
-1. **Traffic is routed to the nearest healthy region.**
-2. If the **Cloud Run service fails**, the **Load Balancer should automatically shift traffic** to another healthy region.
-
-## **Improvements & Future Work**
-- The **`outlier_detection` attribute** could be fine-tuned to enhance failure detection and recovery.
-- Currently, the failover **partially works but is not perfect**.
+# Global Load Balancer and Managed Instance Groups
 
 ## Cloning this repository into your Cloud Shell
 
@@ -32,7 +16,7 @@ git clone https://github.com/arki1/terraform_examples.git
 
 Go to this example folder by running:
 ```sh
-cd terraform_examples/lb-cloudrun
+cd terraform_examples/lb-migs
 ```
 
 ## Building Image to be Used in Cloud Run
@@ -40,8 +24,8 @@ cd terraform_examples/lb-cloudrun
 In Cloud Shell, run:
 
 ```sh
-cd cloudrun-app/
-gcloud builds submit --tag gcr.io/$DEVSHELL_PROJECT_ID/cloudrun-hello
+cd container-app/
+gcloud builds submit --tag gcr.io/$DEVSHELL_PROJECT_ID/container-hello
 ```
 
 ## Define a subdomain prefix
@@ -111,11 +95,18 @@ After using it, we recommend that you clean up the environment to release resour
 Doing the way it's described below, you won't be destroying the SSL certificate, and will make it faster to provision it again - if necessary.
 
 ```sh
-cd terraform/
 terraform destroy \
   -var="project_id=$DEVSHELL_PROJECT_ID" \
   -var="subdomain=$YOUR_PREFIX" \
-  -target="google_cloud_run_service.cloudrun_service" \
+  -target="google_compute_firewall.default" \
+  -target="google_service_account.vm_service_account" \
+  -target="google_project_iam_member.artifact_registry_access" \
+  -target="google_project_iam_member.storage_access" \
+  -target="google_compute_router.nat_router" \
+  -target="google_compute_router_nat.cloud_nat" \
+  -target="google_compute_instance_template.vm_template" \
+  -target="google_compute_region_instance_group_manager.mig" \
+  -target="google_compute_health_check.default" \
   -target="google_compute_backend_service.backend" \
   -target="google_compute_global_forwarding_rule.https_forwarding_rule" \
   -target="google_compute_target_https_proxy.https_proxy" \
@@ -124,6 +115,9 @@ terraform destroy \
   -target="google_dns_record_set.subdomain"
 ```
 
+Note: MIGs are really hard to delete. They take SO LONG that sometimes terraform gives up waiting for them. You may have to retry destruction a few times.
+
+
 ## FAQ & Troubleshooting
 
 ### Error SSL Certificate already exists
@@ -131,9 +125,39 @@ terraform destroy \
 > Error: Error creating ManagedSslCertificate: googleapi: Error 409: The resource 'projects/YOUR_PROJECT/global/sslCertificates/cloudrun-ssl-cert-YOUR_PREFIX' already exists
 
 In this case, you already have a certificate and terraform is trying to create it. To fix it, you must import it to terraform state.
+
 ```sh
 terraform import \
   -var="project_id=$DEVSHELL_PROJECT_ID" \
   -var="subdomain=$YOUR_PREFIX" \
   google_compute_managed_ssl_certificate.ssl_cert projects/$DEVSHELL_PROJECT_ID/global/sslCertificates/cloudrun-ssl-cert-$YOUR_PREFIX
+```
+
+### Useful commands
+
+Useful commands when SSHing into the MIG's VM instances.
+
+Check if the container is running:
+
+```sh
+docker ps
+```
+
+Check if the images were pulled:
+
+```sh
+docker images ls
+```
+
+See logs:
+
+```sh
+sudo journalctl -u konlet-startup --no-pager
+sudo journalctl -u google-startup-scripts --no-pager
+```
+
+Not used, but in some cases this is used instead of docker. Just writing it down.
+
+```sh
+sudo crictl ps
 ```
