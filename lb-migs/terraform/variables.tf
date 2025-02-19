@@ -13,7 +13,7 @@ variable "regions" {
     "us-east1",
     "southamerica-east1",
     "southamerica-west1",
-    "europe-west1",
+    "europe-west2",
     "northamerica-northeast1"
   ]
 }
