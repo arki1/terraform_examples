@@ -113,8 +113,7 @@ resource "google_compute_region_instance_group_manager" "mig" {
 
 # Health Check (Updated for Port 80)
 resource "google_compute_health_check" "default" {
-  for_each       = toset(var.regions)
-  name                = "health-check-${each.value}"
+  name                = "health-check"
   check_interval_sec  = 10
   timeout_sec         = 5
   healthy_threshold   = 2
