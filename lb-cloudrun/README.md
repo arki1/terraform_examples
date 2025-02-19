@@ -44,6 +44,15 @@ cd cloudrun-app/
 gcloud builds submit --tag gcr.io/$DEVSHELL_PROJECT_ID/cloudrun-hello
 ```
 
+## Define a subdomain prefix
+
+Define a prefix in which the endpoing will use for the subdomain. `https://YOUR_PREFIX.arki1.cloud`
+We recommend using your or any unique nickname to avoid colision with other instructors.
+
+```sh
+YOUR_PREFIX=<your_name_or_nickname>
+```
+
 ## 🚀 Running Terraform in Cloud Shell
 
 If your Terraform files are stored in Cloud Shell, simply:
@@ -52,15 +61,6 @@ If your Terraform files are stored in Cloud Shell, simply:
 cd ..
 cd terraform/
 terraform init
-```
-
-## Define a subdomain prefix
-
-Define a prefix in which the endpoing will use for the subdomain. `https://YOUR_PREFIX.arki1.cloud`
-We recommend using your or any unique nickname to avoid colision with other instructors.
-
-```sh
-YOUR_PREFIX=<your_name_or_nickname>
 ```
 
 ```sh
