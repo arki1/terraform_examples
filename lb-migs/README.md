@@ -58,6 +58,8 @@ terraform init
 terraform apply -var="project_id=$DEVSHELL_PROJECT_ID" -var="subdomain=$YOUR_PREFIX"
 ```
 
+NOTE: If you run into an error `Error 400: The resource 'projects/.../global/healthChecks/health-check' is not ready, resourceNotReady`, all you need is to run the command above (`terraform apply`) again.
+
 And you're good to go! 🚀
 
 ## Testing
