@@ -28,6 +28,13 @@ cd container-app/
 gcloud builds submit --tag gcr.io/$DEVSHELL_PROJECT_ID/container-hello
 ```
 
+## TODO
+
+Remove need to go to GAR and add permission to `allUsers` to `roles/artifactregistry.reader`.
+
+Right now this is stil necessary.
+
+
 ## Define a subdomain prefix
 
 Define a prefix in which the endpoing will use for the subdomain. `https://YOUR_PREFIX.arki1.cloud`
