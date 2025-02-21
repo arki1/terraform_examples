@@ -88,6 +88,8 @@ resource "google_compute_region_instance_group_manager" "mig" {
   base_instance_name = "vm-${each.value}"
   region             = each.value
 
+  depends_on = [google_compute_health_check.default]
+
   version {
     instance_template = google_compute_instance_template.instance_template[each.value].self_link
   }
