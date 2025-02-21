@@ -44,7 +44,7 @@ resource "google_compute_managed_ssl_certificate" "ssl_cert" {
     domains = ["${var.subdomain}.${var.parent_domain}"]
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }

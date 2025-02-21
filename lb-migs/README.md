@@ -92,7 +92,12 @@ Please check the `arki1-cloud` project to see the configurations related to DNS.
 
 After using it, we recommend that you clean up the environment to release resources and avoid unnecessary costs.
 
-Doing the way it's described below, you won't be destroying the SSL certificate, and will make it faster to provision it again - if necessary.
+The script below will destroy all resources, including the SSL certificate.
+```sh
+terraform destroy -var="project_id=$DEVSHELL_PROJECT_ID" -var="subdomain=$YOUR_PREFIX"
+```
+
+However, doing the way it's described below, you won't be destroying the SSL certificate, and will make it faster to provision it again - if necessary.
 
 ```sh
 terraform destroy \
